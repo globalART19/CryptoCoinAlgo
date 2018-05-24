@@ -1,7 +1,7 @@
 {
-  "name": "boilermaker",
+  "name": "cryptocoinalgo",
   "version": "1.0.0",
-  "description": "Some boilerplate code to get you started - get shakin'!",
+  "description": "Cryptocurrency algorithmic trading platform!",
   "engines": {
     "node": ">= 7.0.0"
   },
@@ -18,7 +18,7 @@
     "start-server": "nodemon server -e html,js,scss --ignore public --ignore client",
     "test": "NODE_ENV='test' mocha \"./server/**/*.spec.js\" \"./client/**/*.spec.js\" \"./script/**/*.spec.js\" --require @babel/polyfill --require @babel/register"
   },
-  "author": "Fullstack Academy of Code",
+  "author": "Andrew Trahan",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.15.3",
@@ -27,6 +27,7 @@
     "connect-session-sequelize": "^4.1.0",
     "express": "^4.14.1",
     "express-session": "^1.15.1",
+    "gdax": "^0.8.0",
     "history": "^4.6.3",
     "morgan": "^1.8.1",
     "passport": "^0.3.2",
