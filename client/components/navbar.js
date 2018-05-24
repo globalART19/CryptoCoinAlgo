@@ -5,28 +5,32 @@ import { Link } from 'react-router-dom'
 import { logout } from '../store'
 
 const Navbar = ({ handleClick, isLoggedIn }) => (
-  <div>
-    <div className='flex-center'>
-      <h1>CryptoCoinAlgo</h1>
-      <nav>
-        {isLoggedIn ? (
-          <div>
-            {/* The navbar will show these links after you log in */}
-            <Link to="/home">Home</Link>
-            <a href="#" onClick={handleClick}>
-              Logout
-            </a>
-          </div>
-        ) : (
-            <div>
-              {/* The navbar will show these links before you log in */}
-              <Link to="/login">Login</Link>
-              <Link to="/signup">Sign Up</Link>
-            </div>
-          )}
-      </nav>
-    </div>
-    <hr />
+  <div className='navbar navbar-expand-md navbar-dark sticky-top bg-dark py-0'>
+    <Link to='/' className='navbar-brand' >CryptoCoinAlgo</Link>
+    <nav className='collapse navbar-collapse' id='navbar-collapse'>
+      <ul className='navbar-nav mr-auto'>
+        {isLoggedIn && <li className='nav-item'><Link className='nav-link' to='/dashboard'>Dashboard</Link></li>}
+        <li className='nav-item'><Link className='nav-link' to='/market'>Market</Link></li>
+        <li className='nav-item'><Link className='nav-link' to='/algorithm'>Algorithm</Link></li>
+        {isLoggedIn && <li className='nav-item'><Link className='nav-link' to='/historicaldata'>Historical Data</Link></li>}
+      </ul>
+      <ul className='navbar-nav'>
+        {isLoggedIn && <li className='nav-item'>
+          <a href='#' onClick={handleClick}>
+            Logout
+                </a>
+        </li>
+        }
+        {!isLoggedIn && <li className='nav-item'>
+          <Link className='nav-link' to='/login'>Login</Link>
+        </li>
+        }
+        {!isLoggedIn && <li className='nav-item'>
+          <Link className='nav-link' to='/signup'>Sign Up</Link>
+        </li>
+        }
+      </ul>
+    </nav>
   </div>
 )
 

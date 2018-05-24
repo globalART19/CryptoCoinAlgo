@@ -1,8 +1,19 @@
 {
-	"root": true,
-	"extends": "fullstack",
-	"rules": {
-		"semi": 0,
-		"new-cap": [1, { "capIsNewExceptions": ["Router"] }]
-	}
+  "root": true,
+  "extends": "fullstack",
+  "rules": {
+    "semi": 0,
+    "new-cap": [
+      1,
+      {
+        "capIsNewExceptions": [
+          "Router"
+        ]
+      }
+    ],
+    "jsx-quotes": [
+      "warning",
+      "prefer-single"
+    ]
+  }
 }
