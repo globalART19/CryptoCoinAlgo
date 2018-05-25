@@ -31,6 +31,15 @@ const HistoricalData = db.define('historicaldata', {
   },
 })
 
+HistoricalData.findDataSets = async function (start = 0, end = 0) {
+
+  return {
+    chart1MinData: [],
+    chart1DayData: [],
+    chart1WkData: []
+  }
+}
+
 const getHistoricalAPIData = async (product, startSetTime, endSetTime, granularity) => {
   let startISOTime = new Date(startSetTime).toISOString().replace('Z', '000Z')
   let endISOTime = new Date(endSetTime).toISOString().replace('Z', '000Z')

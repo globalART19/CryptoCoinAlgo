@@ -35,3 +35,127 @@ form div {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* USER DASHBOARD */
+.flex-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between
+}
+.productselector {
+  float: left;
+  color: white;
+  border: 1px solid gray;
+  border-radius: 0 0 25% 25%;
+  background: blue;
+}
+.chartoptions {
+  float: right;
+  color: white;
+  border: 1px solid gray;
+  border-radius: 0 0 25% 25%;
+  background: green;
+}
+.ct-zoom-rect {
+  fill: rgba(200, 100, 100, 0.3);
+  stroke: red;
+}
+.newsblurb {
+  margin: 1em;
+  background: rgb(194, 104, 119);
+  height: 10em;
+}
+.content {
+  margin-top: 10px;
+}
+#leftColumn1 {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-right: 2em;
+  justify-content: flex-start;
+}
+#rightColumn1 {
+  display: flex;
+  flex-direction: column;
+  /* width: 40em; */
+}
+#pcnavbar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+#performanceblock {
+  position: relative;
+  background: black;
+  color: gainsboro;
+  width: 100%;
+  height: calc(50% - 1em);
+  padding: 1em;
+  margin-right: 2em;
+}
+#perfchart {
+  margin: 1em;
+  height: calc(100% - 3em);
+  background: turquoise;
+  color: black;
+}
+#l2chart {
+  margin: 1em;
+  height: calc(100% - 3em);
+  background: yellow;
+  color: black;
+}
+#level2block {
+  position: relative;
+  background: black;
+  color: gainsboro;
+  width: 100%;
+  height: calc(50% - 1em);
+  padding: 1em;
+  margin-right: 2em;
+  margin-top: 1em;
+}
+#performancedata {
+  position: relative;
+  width: 25em;
+  height: 50em;
+  padding: 1em;
+  background: gray;
+}
+#totalsbox {
+  height: 15em;
+  margin: 1em;
+  border: 1px solid black;
+}
+#tradehistorybox{
+  height: 30em;
+  margin: 1em;
+  border: 1px solid black;
+}
+#algosettings {
+  position: relative;
+  width: 60%;
+  height: 20em;
+  padding: 1em;
+  background: orange;
+}
+#ad {
+  width: 100%;
+  height: 20em;
+  padding: 1em;
+  margin: 2em 0;
+  background: green;
+}
+#news {
+  display: relative;
+  background: thistle;
+  padding-bottom: 1px;
+}
+#news-header {
+  position: relative;
+}
+#news-picker {
+  position: absolute;
+  z-index: 1;
+}

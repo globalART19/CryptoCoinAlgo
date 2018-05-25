@@ -9,14 +9,14 @@ const Navbar = ({ handleClick, isLoggedIn }) => (
     <Link to='/' className='navbar-brand' >CryptoCoinAlgo</Link>
     <nav className='collapse navbar-collapse' id='navbar-collapse'>
       <ul className='navbar-nav mr-auto'>
-        {isLoggedIn && <li className='nav-item'><Link className='nav-link' to='/dashboard'>Dashboard</Link></li>}
+        {isLoggedIn && <li className='nav-item'><Link className='nav-link' to='/home'>Dashboard</Link></li>}
         <li className='nav-item'><Link className='nav-link' to='/market'>Market</Link></li>
         <li className='nav-item'><Link className='nav-link' to='/algorithm'>Algorithm</Link></li>
         {isLoggedIn && <li className='nav-item'><Link className='nav-link' to='/historicaldata'>Historical Data</Link></li>}
       </ul>
       <ul className='navbar-nav'>
         {isLoggedIn && <li className='nav-item'>
-          <a href='#' onClick={handleClick}>
+          <a href='#' className='nav-link' onClick={handleClick}>
             Logout
                 </a>
         </li>

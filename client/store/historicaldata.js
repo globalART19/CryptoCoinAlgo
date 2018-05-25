@@ -4,51 +4,42 @@ import history from '../history'
 /**
  * ACTION TYPES
  */
-const GET_USER = 'GET_USER'
-const REMOVE_USER = 'REMOVE_USER'
+const GET_HIST_DATA = 'GET_HIST_DATA'
+const SELECT_CHART = 'SELECT_CHART'
 
 /**
  * INITIAL STATE
  */
 const defaultHistory = {
-  chartName: '',
-  chartData: []
+  chart1Min: {
+    name: '',
+    data: []
+  },
+  chart1Day: {
+    name: '',
+    data: []
+  },
+  chart1Wk: {
+    name: '',
+    data: []
+  },
+  selectedChart: 'chart1Day'
 }
 
 /**
  * ACTION CREATORS
  */
-const getUser = user => ({ type: GET_USER, user })
-const removeUser = () => ({ type: REMOVE_USER })
+const getChartData = (data) => ({ type: GET_HIST_DATA, data })
+const selectChart = (period) => ({ type: SELECT_CHART, period })
 
 /**
  * THUNK CREATORS
  */
-export const me = () =>
+export const getInitialChartDataThunk = () =>
   dispatch =>
-    axios.get('/auth/me')
+    axios.get('/api/historicaldata')
       .then(res =>
-        dispatch(getUser(res.data || defaultHistory)))
-      .catch(err => console.log(err))
-
-export const auth = (email, password, method) =>
-  dispatch =>
-    axios.post(`/auth/${method}`, { email, password })
-      .then(res => {
-        dispatch(getUser(res.data))
-        history.push('/home')
-      }, authError => { // rare example: a good use case for parallel (non-catch) error handler
-        dispatch(getUser({ error: authError }))
-      })
-      .catch(dispatchOrHistoryErr => console.error(dispatchOrHistoryErr))
-
-export const logout = () =>
-  dispatch =>
-    axios.post('/auth/logout')
-      .then(_ => {
-        dispatch(removeUser())
-        history.push('/login')
-      })
+        dispatch(getChartData(res.data || defaultHistory)))
       .catch(err => console.log(err))
 
 /**
@@ -56,9 +47,23 @@ export const logout = () =>
  */
 export default function (state = defaultHistory, action) {
   switch (action.type) {
-    case GET_USER:
-      return action.user
-    case REMOVE_USER:
+    case GET_HIST_DATA:
+      return {
+        ...state,
+        chart1Min: {
+          ...state.chart1Min,
+          data: action.chart1Min
+        },
+        chart1Day: {
+          ...state.chart1Day,
+          data: action.chart1Day
+        },
+        chart1Wk: {
+          ...state.chart1Wk,
+          data: action.chart1Wk
+        },
+      }
+    case SELECT_CHART:
       return defaultHistory
     default:
       return state
