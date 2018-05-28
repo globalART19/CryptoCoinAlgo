@@ -1,5 +1,5 @@
 const indicators = require('./indicatorcalcs')
-const { HistoricalData } = require('../db')
+const { HistoricalData } = require('../models')
 
 const calculateIndicators = async function (granularity, period, curHistData) {
   let histData

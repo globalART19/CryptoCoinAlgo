@@ -1,6 +1,6 @@
 import React from 'react'
 
-const HomePage = (props) => {
+const LandingPage = (props) => {
   return (
     <div id="welcome-message" className="main">
       <h1>React Homepage Rebuild! - Starting Up!!</h1>
@@ -11,4 +11,4 @@ const HomePage = (props) => {
   )
 }
 
-export default HomePage
+export default LandingPage

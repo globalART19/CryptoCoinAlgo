@@ -31,12 +31,42 @@ const HistoricalData = db.define('historicaldata', {
   },
 })
 
-HistoricalData.findDataSets = async function (start = 0, end = 0) {
+const formatData = (data, timeFactor, period = 0, granularity = 0) => {
+  const formattedData = data.map((elem, i, data) => {
+    // let convertedTime = new Date(0)
+    // convertedTime.setUTCSeconds(elem.histTime)
+    // return i > data.length - 300 * timeFactor ? [convertedTime, elem.close] : null
+    return [elem.histTime, elem.close]
+  }).filter(elem => !!elem)
+  if (period && granularity) {
+    // data = await calculateIndicators(granularity, period, histDataArray)
+    // data.forEach(dataSet => dataSet.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'mave', 'msig', 'rsi']))
+  } else {
+    // formattedData.unshift(['Time (1 hr intervals)', 'Price($)'])
+  }
+  return formattedData
+}
+
+HistoricalData.findDataSets = async function (start = 0, end = 9999999999) {
+  const data = await HistoricalData.findAll({
+    attributes: ['histTime', 'close'],
+    where: {
+      histTime: {
+        $between: [start - 1, end + 1]
+      }
+    },
+    order: [['histTime', 'ASC']]
+  })
+  const chart1MinData = formatData(data, 1)
+  const chart1HrData = formatData(data, 1)
+  const chart1DayData = formatData(data, 24)
+  const chart1WkData = formatData(data, 168)
 
   return {
-    chart1MinData: [],
-    chart1DayData: [],
-    chart1WkData: []
+    chart1MinData,
+    chart1HrData,
+    chart1DayData,
+    chart1WkData
   }
 }
 
@@ -70,6 +100,7 @@ HistoricalData.importHistory = async function (product, startDate, endDate, gran
       bulkUpdateArray.push([...dataArray])
       startSetTime = endSetTime + granMS
       endSetTime += 300 * granMS
+      console.log('pull attempt # ', count)
       count++
     }
   } catch (e) {

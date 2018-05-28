@@ -49,12 +49,24 @@ form div {
   border-radius: 0 0 25% 25%;
   background: blue;
 }
+.chart-block {
+  position: relative;
+}
+.chart-navbar {
+  position: absolute;
+  display: flex;
+  justify-content: flex-end;
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
 .chartoptions {
-  float: right;
   color: white;
   border: 1px solid gray;
   border-radius: 0 0 25% 25%;
   background: green;
+  cursor: pointer;
+  padding: 4px
 }
 .ct-zoom-rect {
   fill: rgba(200, 100, 100, 0.3);

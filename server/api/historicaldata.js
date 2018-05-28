@@ -1,6 +1,6 @@
 const router = require('express').Router()
-const { db, HistoricalData } = require('../db/')
-const { calculateIndicators } = require('../datamanipulation/historicaldatacalc')
+const { HistoricalData } = require('../db/models')
+const { calculateIndicators } = require('../db/datamanipulation/historicaldatacalc')
 
 router.get('/', async (req, res, next) => {
   try {
@@ -28,15 +28,32 @@ router.post('/chart', async (req, res, next) => {
     const histDataArray = histData.map((instance) => {
       return [instance.dataValues.histTime, instance.dataValues.close]
     })
+    let chartData
     if (req.body.period) {
-      const chartData = await calculateIndicators(req.body.granularity, req.body.period, histDataArray)
+      chartData = await calculateIndicators(req.body.granularity, req.body.period, histDataArray)
       chartData.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'mave', 'msig', 'rsi'])
-      res.json(JSON.stringify(chartData))
-
     } else {
-      histDataArray.unshift(['Time (1 hr intervals)', 'Price($)'])
-      res.json(JSON.stringify(histDataArray))
+      chartData.unshift(['Time (1 hr intervals)', 'Price($)'])
     }
+    const chart1MinData = chartData.map((elem, i) => {
+      return i < 501 ? elem : null
+    }).filter(elem => !!elem)
+    const chart1HrData = chartData.map((elem, i) => {
+      return i < 501 ? elem : null
+    }).filter(elem => !!elem)
+    const chart1DayData = chartData.map((elem, i) => {
+      if (i < 501 * 24 && i % 24 === 0) return elem
+    }).filter(elem => !!elem)
+    const chart1WkData = chartData.map((elem, i) => {
+      if (i < 501 * 168 && i % 168 === 0) return elem
+    }).filter(elem => !!elem)
+    const responseData = {
+      chart1MinData,
+      chart1HrData,
+      chart1DayData,
+      chart1WkData
+    }
+    res.json(JSON.stringify(responseData))
   } catch (e) {
     next(e)
   }
