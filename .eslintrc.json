@@ -2,7 +2,7 @@
   "root": true,
   "extends": "fullstack",
   "rules": {
-    "semi": 0,
+    "semi": 2,
     "new-cap": [
       1,
       {

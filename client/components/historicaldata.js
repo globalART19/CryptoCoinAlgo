@@ -74,7 +74,7 @@ class HistoricalData extends React.Component {
             <div className='chartoptions'>1year</div>
           </div>
         </div>
-        {/* {!!chart2Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart2Data} chartName='mAve and mSig' />}
+        {/* {!!chart2Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart2Data} chartName='MACD and mSig' />}
         {!!chart3Data[0] && !!(chart2Data[0].length - 1) && <Charts chartData={chart3Data} chartName='rSig' />} */}
         <button type='button' onClick={() => { this.handlePullData() }} className="btn btn-primary" style={{ display: 'block', margin: 'auto', background: 'red' }}>Pull Data</button>
       </div>)

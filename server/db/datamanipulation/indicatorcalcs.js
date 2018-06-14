@@ -28,16 +28,16 @@ const m26ema = function (histData, index, period) {
   return m26emaCalc
 }
 
-const msig = function (histData, index, curMave, period) {
+const msig = function (histData, index, curMacd, period) {
   let msigcalc = 0
-  let firstSum = curMave
+  let firstSum = curMacd
   let curSum = 0
   const startPoint = index - 44 * period
   for (let i = startPoint; i < startPoint + period; i++) {
-    firstSum += histData[i][4]
+    firstSum += histData[i][8]
   }
   for (let i = startPoint + period; i < startPoint + 9 * period; i++) {
-    curSum += histData[i][4]
+    curSum += histData[i][8]
   }
   msigcalc = (firstSum * 2 / (10 * period)) + (curSum * 8 / (10 * period))
   return msigcalc

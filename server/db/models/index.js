@@ -2,6 +2,7 @@ const User = require('./user')
 const { HistoricalData } = require('./historicaldata')
 const { Order } = require('./order')
 const { AlgorithmResults } = require('./algorithmresults')
+const { TensorFlow } = require('./tensorflow')
 
 /**
  * If we had any associations to make, this would be a great place to put them!
@@ -17,5 +18,5 @@ const { AlgorithmResults } = require('./algorithmresults')
  * instead of: const User = require('../db/models/user')
  */
 module.exports = {
-  User, HistoricalData, Order, AlgorithmResults
+  User, HistoricalData, Order, AlgorithmResults, TensorFlow
 }

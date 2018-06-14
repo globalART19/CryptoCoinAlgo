@@ -40,7 +40,7 @@ const formatData = (data, timeFactor, period = 0, granularity = 0) => {
   }).filter(elem => !!elem)
   if (period && granularity) {
     // data = await calculateIndicators(granularity, period, histDataArray)
-    // data.forEach(dataSet => dataSet.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'mave', 'msig', 'rsi']))
+    // data.forEach(dataSet => dataSet.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'macd', 'msig', 'rsi']))
   } else {
     // formattedData.unshift(['Time (1 hr intervals)', 'Price($)'])
   }

@@ -14,8 +14,8 @@ router.get('/', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   try {
     const sDate = new Date(2017, 4, 1, 0, 0, 0)
-    const eDate = new Date(2018, 4, 2, 0, 0, 0)
-    await HistoricalData.importHistory('BTC-USD', sDate, eDate, req.body.period)
+    const eDate = new Date(2018, 5, 10, 0, 0, 0)
+    await HistoricalData.importHistory('BTC-USD', sDate, eDate, 60)
     res.sendStatus(201)
   } catch (e) {
     next(e)
@@ -31,7 +31,7 @@ router.post('/chart', async (req, res, next) => {
     let chartData
     if (req.body.period) {
       chartData = await calculateIndicators(req.body.granularity, req.body.period, histDataArray)
-      chartData.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'mave', 'msig', 'rsi'])
+      chartData.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'macd', 'msig', 'rsi'])
     } else {
       chartData.unshift(['Time (1 hr intervals)', 'Price($)'])
     }
