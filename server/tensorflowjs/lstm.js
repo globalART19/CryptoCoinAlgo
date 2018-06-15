@@ -5,6 +5,8 @@ require("@tensorflow/tfjs-node"); // Use '@tensorflow/tfjs-node-gpu' if running 
 
 const batchSize = 100;
 const lstmSize = 100;
+const n_steps = 45
+const seq_width = 50
 
 // let lstm = tf.contrib.rnn.BasicLSTMCall(lstmSize)
 

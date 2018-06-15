@@ -127,21 +127,21 @@ TensorFlow.populateData = async function (granularity, period, curHistData) {
   const dataPointsPerPeriod = Math.floor(period / granularity) > 0 ?
     Math.floor(period / granularity) : 1
   const sortedHistData = histData.sort((a, b) => a[0] - b[0])
-  await Promise.all(sortedHistData.forEach((item, i, histDataArray) => {
+  await Promise.all(sortedHistData.map(async (item, i, histDataArray) => {
     let objData
     // Use previous data point to fill any missing data
-    if (histDataArray[i - 1]) {
-      let curTime = histDataArray[i - 1][0]
-      while (item[0] > curTime) {
+    let curTime = histDataArray[i - 1][0]
+    if (Math.round(item[0] - curTime) > 1) {
+      while (Math.round(item[0] - curTime) > 1) {
         let repeatItem = [curTime, ...histDataArray[i - 1].slice(1)]
         objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
-        TensorFlow.create(objData)
+        await TensorFlow.create(objData)
         curTime += granularity
       }
       return histDataArray[i - 1][0];
     }
     objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
-    TensorFlow.create(objData)
+    return TensorFlow.create(objData)
   }))
   console.log("tensorflow data populated");
 };
