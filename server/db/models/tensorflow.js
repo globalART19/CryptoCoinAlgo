@@ -76,6 +76,40 @@ TensorFlow.findDataSets = async function (start = 0, end = 9999999999) {
   }
 }
 
+const calcData = (item, i, histDataArray, dataPointsPerPeriod) => {
+  let m12ema = null;
+  let m26ema = null;
+  let macd = null;
+  let msig = null;
+  let rsi = null;
+  if (i > 12 * dataPointsPerPeriod) {
+    m12ema = indicators.m12ema(histDataArray, i, dataPointsPerPeriod);
+  }
+  if (i > 26 * dataPointsPerPeriod) {
+    m26ema = indicators.m26ema(histDataArray, i, dataPointsPerPeriod);
+    macd = m12ema - m26ema;
+  }
+  if (i > 44 * dataPointsPerPeriod) {
+    msig = indicators.msig(histDataArray, i, macd, dataPointsPerPeriod);
+  }
+  if (i > 15 * dataPointsPerPeriod) {
+    rsi = indicators.rsi(histDataArray, i, dataPointsPerPeriod);
+  }
+  return {
+    histTime: item[0],
+    low: item[2],
+    high: item[3],
+    open: item[4],
+    close: item[1],
+    volume: item[5],
+    m12ema,
+    m26ema,
+    macd,
+    msig,
+    rsi
+  };
+}
+
 TensorFlow.populateData = async function (granularity, period, curHistData) {
   const newData = await HistoricalData.findAll({
     order: [["histTime", "ASC"]]
@@ -90,49 +124,25 @@ TensorFlow.populateData = async function (granularity, period, curHistData) {
       item.dataValues.volume
     ];
   });
-  const dataPointsPerPeriod =
-    Math.floor(period / granularity) > 0 ? Math.floor(period / granularity) : 1;
-  const sortedHistData = histData.sort((a, b) => a[0] - b[0]);
-  sortedHistData.forEach((item, i, histDataArray) => {
-    if (histDataArray[i - 1] && item[0] === histDataArray[i - 1][0]) {
+  const dataPointsPerPeriod = Math.floor(period / granularity) > 0 ?
+    Math.floor(period / granularity) : 1
+  const sortedHistData = histData.sort((a, b) => a[0] - b[0])
+  await Promise.all(sortedHistData.forEach((item, i, histDataArray) => {
+    let objData
+    // Use previous data point to fill any missing data
+    if (histDataArray[i - 1]) {
+      let curTime = histDataArray[i - 1][0]
+      while (item[0] > curTime) {
+        let repeatItem = [curTime, ...histDataArray[i - 1].slice(1)]
+        objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
+        TensorFlow.create(objData)
+        curTime += granularity
+      }
       return histDataArray[i - 1][0];
     }
-    let m12ema = null;
-    let m26ema = null;
-    let macd = null;
-    let msig = null;
-    let rsi = null;
-    if (i > 12 * dataPointsPerPeriod) {
-      m12ema = indicators.m12ema(histDataArray, i, dataPointsPerPeriod);
-    }
-    if (i > 26 * dataPointsPerPeriod) {
-      m26ema = indicators.m26ema(histDataArray, i, dataPointsPerPeriod);
-      macd = m12ema - m26ema;
-    }
-    if (i > 44 * dataPointsPerPeriod) {
-      msig = indicators.msig(histDataArray, i, macd, dataPointsPerPeriod);
-    }
-    if (i > 15 * dataPointsPerPeriod) {
-      rsi = indicators.rsi(histDataArray, i, dataPointsPerPeriod);
-    }
-    item.push(m12ema, m26ema, macd, msig, rsi);
-  });
-  const objData = sortedHistData.map(data => {
-    return {
-      histTime: data[0],
-      low: data[2],
-      high: data[3],
-      open: data[4],
-      close: data[1],
-      volume: data[5],
-      m12ema: data[6],
-      m26ema: data[7],
-      macd: data[8],
-      msig: data[9],
-      rsi: data[10]
-    };
-  });
-  await TensorFlow.bulkCreate(objData);
+    objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
+    TensorFlow.create(objData)
+  }))
   console.log("tensorflow data populated");
 };
 

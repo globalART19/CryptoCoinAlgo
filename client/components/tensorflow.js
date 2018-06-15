@@ -3,19 +3,19 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 // import FormUpdateIndicators from './FormUpdateIndicators'
 import Charts from './charts'
-import { getInitialChartDataThunk, selectChartAction } from '../store/historicaldata';
+import { getInitialTFChartDataThunk, selectTFChartAction } from '../store/tensorflow';
 
 const mapStateToProps = (state) => ({
-  selectedChart: state.historicaldata.selectedChart,
-  chart1Min: state.historicaldata.chart1Min,
-  chart1Hr: state.historicaldata.chart1Hr,
-  chart1Day: state.historicaldata.chart1Day,
-  chart1Wk: state.historicaldata.chart1Wk,
-  chartData: state.historicaldata.chartData
+  selectedChart: state.tensorflow.selectedChart,
+  chart1Min: state.tensorflow.chart1Min,
+  chart1Hr: state.tensorflow.chart1Hr,
+  chart1Day: state.tensorflow.chart1Day,
+  chart1Wk: state.tensorflow.chart1Wk,
+  chartData: state.tensorflow.chartData
 })
 const mapDispatchToProps = (dispatch) => ({
-  getChartData: () => dispatch(getInitialChartDataThunk()),
-  selectChart: (chartName) => dispatch(selectChartAction(chartName))
+  getChartData: () => dispatch(getInitialTFChartDataThunk()),
+  selectChart: (chartName) => dispatch(selectTFChartAction(chartName))
 })
 
 
@@ -24,13 +24,14 @@ class TensorFlow extends React.Component {
     super(props)
     this.state = {
       period: 3600,
-      granularity: 60
+      granularity: 60,
+      selectedChart: this.props.selectedChart
     }
     this.handlePullData = this.handlePullData.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
   async handlePullData() {
-    await axios.post('/api/historicaldata/', { 'period': this.state.period, 'granularity': this.state.granularity })
+    await axios.post('/api/tensorflow/', { 'period': this.state.period, 'granularity': this.state.granularity })
     this.setState(this.state)
     console.log('historical data pull complete')
   }
@@ -39,21 +40,24 @@ class TensorFlow extends React.Component {
     await this.setState({
       period: event.target.period.value * 3600
     })
-    await this.props.getChart('HistoricalData', { 'period': this.state.period, 'granularity': this.state.granularity })
+    await this.props.getChart('tensorflow', { 'period': this.state.period, 'granularity': this.state.granularity })
+  }
+  handleOptionClick = (evt) => {
+    console.log(evt.target)
+    this.setState({ ...this.state, selectedChart: evt.target.value })
   }
   async componentDidMount() {
     await this.props.getChartData()
     // this.setState(this.state)
   }
   render() {
-    const chart1Data = this.props[this.props.selectedChart]
-    // .map(instance => {
-    //   return instance.slice(0, 5)
-    // })
-    const chart2Data = this.props.chartData.map(instance => {
+    const chart1Data = this.props[this.state.selectedChart].map(instance => {
+      return instance.slice(0, 4)
+    })
+    const chart2Data = this.props[this.state.selectedChart].map(instance => {
       return [...instance.slice(0, 1), ...instance.slice(4, 6)]
     })
-    const chart3Data = this.props.chartData.map(instance => {
+    const chart3Data = this.props[this.state.selectedChart].map(instance => {
       return [...instance.slice(0, 1), ...instance.slice(6)]
     })
     return (
@@ -67,19 +71,19 @@ class TensorFlow extends React.Component {
         </div>
         {/* <AlgorithmResults /> */}
         <div className='chart-block'>
-          <Charts chartData={chart1Data} chartName={this.props.selectedChart} />
-          <div className='chart-navbar' onClick={() => { }}>
-            <div className='chartoptions'>1day</div>
-            <div className='chartoptions'>1week</div>
-            <div className='chartoptions'>1month</div>
-            <div className='chartoptions'>1year</div>
-          </div>
+          {!!chart2Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart1Data} chartName={this.props.selectedChart} />}
+          <form className='chart-navbar' onClick={this.handleOptionClick} >
+            <button type="button" className='chartoptions' value='chart1Hr' >1week</button>
+            <button type="button" className='chartoptions' value='chart1Min' >1day</button>
+            <button type="button" className='chartoptions' value='chart1Hr' >1month</button>
+            <button type="button" className='chartoptions' value='chart1Day' >1year</button>
+          </form>
         </div>
         {!!chart2Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart2Data} chartName='MACD and mSig' />}
-        {!!chart3Data[0] && !!(chart2Data[0].length - 1) && <Charts chartData={chart3Data} chartName='rSig' />}
+        {!!chart3Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart3Data} chartName='rSig' />}
         <button type='button' onClick={() => { this.handlePullData() }} className="btn btn-primary" style={{ display: 'block', margin: 'auto', background: 'red' }}>Pull Data</button>
       </div>)
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(HistoricalData)
+export default connect(mapStateToProps, mapDispatchToProps)(TensorFlow)

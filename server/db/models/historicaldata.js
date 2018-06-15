@@ -84,7 +84,6 @@ const getHistoricalAPIData = async (product, startSetTime, endSetTime, granulari
 }
 
 HistoricalData.importHistory = async function (product, startDate, endDate, granularity, period, forceUpdate = false) {
-  const bulkUpdateArray = []
   try {
     if (![60, 300, 900, 3600, 21600, 86400].includes(granularity)) { throw new Error('Bad granularity') }
     let startSetTime = startDate.getTime()
@@ -97,7 +96,17 @@ HistoricalData.importHistory = async function (product, startDate, endDate, gran
     while (endSetTime <= endDate.getTime() || count === 0) {
       let dataArray = await getHistoricalAPIData(product, startSetTime, endSetTime, granularity)
       await sleep(500)
-      bulkUpdateArray.push([...dataArray])
+      const objectifiedArray = dataArray.map(elem => {
+        return {
+          histTime: elem[0],
+          low: elem[1],
+          high: elem[2],
+          open: elem[3],
+          close: elem[4],
+          volume: elem[5],
+        }
+      })
+      HistoricalData.bulkCreate(objectifiedArray)
       startSetTime = endSetTime + granMS
       endSetTime += 300 * granMS
       console.log('pull attempt # ', count)
@@ -107,18 +116,18 @@ HistoricalData.importHistory = async function (product, startDate, endDate, gran
     console.error('Invalid importHistory (probably date format)', e)
   }
   try {
-    const flatBulkUpdateArray = [].concat.apply([], bulkUpdateArray)
-    const objectifiedArray = flatBulkUpdateArray.map(elem => {
-      return {
-        histTime: elem[0],
-        low: elem[1],
-        high: elem[2],
-        open: elem[3],
-        close: elem[4],
-        volume: elem[5],
-      }
-    })
-    await HistoricalData.bulkCreate(objectifiedArray)
+    // const flatBulkUpdateArray = [].concat.apply([], bulkUpdateArray)
+    // const objectifiedArray = flatBulkUpdateArray.map(elem => {
+    //   return {
+    //     histTime: elem[0],
+    //     low: elem[1],
+    //     high: elem[2],
+    //     open: elem[3],
+    //     close: elem[4],
+    //     volume: elem[5],
+    //   }
+    // })
+    // await HistoricalData.bulkCreate(objectifiedArray)
     console.log('historical data import successful')
   } catch (e) {
     console.error('Failed db push', e)

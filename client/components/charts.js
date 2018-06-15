@@ -81,19 +81,19 @@ const Charts = (props) => {
     }
   })(props.chartName)
 
-  const rws = props.chartData.map(elem => {
+  const rws = props.chartData.map((elem, i) => {
+    if (i === 0) return elem
     let convertedTime = new Date(0)
     convertedTime.setUTCSeconds(elem[0])
-    return [convertedTime, elem[1]]
+    return [convertedTime, ...elem.slice(1)]
   })
-  console.log(props.chartData)
-  console.log(rws)
   return (
     <div className="google-chart">
       <Chart
         chartType="LineChart"
-        rows={rws}
-        columns={[{ type: 'date', label: 'Time (1 hr intervals)' }, { type: 'number', label: 'Price($)' }]}
+        // rows={rws}
+        // columns={[{ type: 'date', label: 'Time (1 hr intervals)' }, { type: 'number', label: 'Price($)' }]}
+        data={props.chartData}
         options={options}
         graph_id={props.chartName}
         width="100%"
