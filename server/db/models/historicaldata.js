@@ -36,7 +36,7 @@ const formatData = (data, timeFactor, period = 0, granularity = 0) => {
     // let convertedTime = new Date(0)
     // convertedTime.setUTCSeconds(elem.histTime)
     // return i > data.length - 300 * timeFactor ? [convertedTime, elem.close] : null
-    return [elem.histTime, elem.close]
+    return [elem.histTime, elem.close, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
   }).filter(elem => !!elem)
   if (period && granularity) {
     // data = await calculateIndicators(granularity, period, histDataArray)

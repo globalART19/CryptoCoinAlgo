@@ -21,11 +21,11 @@ let lstmKernel = tf.tensor2d(lstmKernelArr)
 let lstmBias = tf.tensor1d(Array.apply(null, { length: 10 }).map(() => 0))
 let c
 let h
-const buildLstm = (forgetBias, kernel, bias, c, h) => {
-  const res = await TensorFlow.findAll({ order: ['histTime', 'ASC'] })
-  const data = res.map(item => Object.values(item.dataValues).slice(1))
-}
-const lstm = buildLstm(forgetBias, lstmKernel, lstmBias, c, h).then(() => {
-  console.log(lstmBias, lstm)
-})
+// const buildLstm = (forgetBias, kernel, bias, c, h) => {
+//   const res = await TensorFlow.findAll({ order: ['histTime', 'ASC'] })
+//   const data = res.map(item => Object.values(item.dataValues).slice(1))
+// }
+// const lstm = buildLstm(forgetBias, lstmKernel, lstmBias, c, h).then(() => {
+//   console.log(lstmBias, lstm)
+// })
 

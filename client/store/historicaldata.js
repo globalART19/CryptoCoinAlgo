@@ -15,7 +15,8 @@ const defaultHistory = {
   chart1Hr: [],
   chart1Day: [],
   chart1Wk: [],
-  selectedChart: 'chart1Hr'
+  selectedChart: 'chart1Hr',
+  chartData: []
 }
 
 /**

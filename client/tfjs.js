@@ -16,13 +16,13 @@ const lstmInitArr = Array.apply(null, { length: 128 }).map(() => {
 let forgetBias = tf.scalar(1.0)
 let lstmKernel = tf.tensor2d(lstmKernelArr)
 let lstmBias = tf.tensor1d(Array.apply(null, { length: 10 }).map(() => 0))
-let c = tf.
-const buildLstm = () => {
-  const res = await TensorFlow.findAll({ order: ['histTime', 'ASC'] })
-  const data = res.map(item => Object.values(item.dataValues).slice(1))
+// let c = tf.
+// const buildLstm = () => {
+//   const res = await TensorFlow.findAll({ order: ['histTime', 'ASC'] })
+//   const data = res.map(item => Object.values(item.dataValues).slice(1))
 
-}
-const lstm = buildLstm()
+// }
+// const lstm = buildLstm()
 
 console.log(lstmBias)
 

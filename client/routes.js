@@ -30,6 +30,7 @@ class Routes extends Component {
         }
         {/* Displays our Login component as a fallback */}
         <Route path='/historicaldata' component={HistoricalData} />
+        <Route path='/tensorflow' component={TensorFlow} />
         <Route component={LandingPage} />
       </Switch>
     )

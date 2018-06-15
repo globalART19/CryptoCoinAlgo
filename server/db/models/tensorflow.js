@@ -7,6 +7,10 @@ const { HistoricalData } = require("./historicaldata");
 const indicators = require("../datamanipulation/indicatorcalcs");
 
 const TensorFlow = db.define("tensorflow", {
+  histTime: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+  },
   low: {
     type: Sequelize.INTEGER,
     allowNull: false
@@ -35,24 +39,44 @@ const TensorFlow = db.define("tensorflow", {
 });
 
 const formatData = (data, timeFactor, period = 0, granularity = 0) => {
-  const formattedData = data
-    .map((elem, i, data) => {
-      // let convertedTime = new Date(0)
-      // convertedTime.setUTCSeconds(elem.histTime)
-      // return i > data.length - 300 * timeFactor ? [convertedTime, elem.close] : null
-      return [elem.histTime, elem.close];
-    })
-    .filter(elem => !!elem);
+  const formattedData = data.map((elem, i, data) => {
+    // let convertedTime = new Date(0)
+    // convertedTime.setUTCSeconds(elem.histTime)
+    // return i > data.length - 300 * timeFactor ? [convertedTime, elem.close] : null
+    return [elem.histTime, elem.close, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
+  }).filter(elem => !!elem)
   if (period && granularity) {
     // data = await calculateIndicators(granularity, period, histDataArray)
     // data.forEach(dataSet => dataSet.unshift(['Time (1 hr intervals)', 'Price($)', 'm12ema', 'm26ema', 'macd', 'msig', 'rsi']))
   } else {
     // formattedData.unshift(['Time (1 hr intervals)', 'Price($)'])
   }
-  return formattedData;
-};
+  return formattedData
+}
 
-TensorFlow.populateData = async function(granularity, period, curHistData) {
+TensorFlow.findDataSets = async function (start = 0, end = 9999999999) {
+  const data = await TensorFlow.findAll({
+    where: {
+      histTime: {
+        $between: [start - 1, end + 1]
+      }
+    },
+    order: [['histTime', 'ASC']]
+  })
+  const chart1MinData = formatData(data, 1)
+  const chart1HrData = formatData(data, 1)
+  const chart1DayData = formatData(data, 24)
+  const chart1WkData = formatData(data, 168)
+
+  return {
+    chart1MinData,
+    chart1HrData,
+    chart1DayData,
+    chart1WkData
+  }
+}
+
+TensorFlow.populateData = async function (granularity, period, curHistData) {
   const newData = await HistoricalData.findAll({
     order: [["histTime", "ASC"]]
   });
