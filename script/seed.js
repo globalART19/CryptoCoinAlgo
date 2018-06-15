@@ -1,11 +1,11 @@
-'use strict'
+"use strict";
 
-const db = require('../server/db')
-const { User, HistoricalData, TensorFlow } = require('../server/db/models')
-const Sequelize = require('sequelize')
-const { sleep } = require('../server/db/models/helperfunctions')
-const Gdax = require('gdax')
-const publicClient = new Gdax.PublicClient()
+const db = require("../server/db");
+const { User, HistoricalData, TensorFlow } = require("../server/db/models");
+const Sequelize = require("sequelize");
+const { sleep } = require("../server/db/models/helperfunctions");
+const Gdax = require("gdax");
+const publicClient = new Gdax.PublicClient();
 
 /**
  * Welcome to the seed file! This seed file uses a newer language feature called...
@@ -20,25 +20,25 @@ const publicClient = new Gdax.PublicClient()
  */
 
 async function seed() {
-  await db.sync({ force: true })
-  console.log('db synced!')
+  await db.sync({ force: true });
+  console.log("db synced!");
   // Whoa! Because we `await` the promise that db.sync returns, the next line will not be
   // executed until that promise resolves!
   const users = await Promise.all([
-    User.create({ email: 'cody@email.com', password: '123' }),
-    User.create({ email: 'murphy@email.com', password: '123' })
-  ])
+    User.create({ email: "cody@email.com", password: "123" }),
+    User.create({ email: "murphy@email.com", password: "123" })
+  ]);
 
-  const sDate = new Date(2018, 5, 1, 0, 0, 0)
-  const eDate = new Date(2018, 5, 10, 0, 0, 0)
-  await HistoricalData.importHistory('BTC-USD', sDate, eDate, 60)
+  const sDate = new Date(2017, 5, 1, 0, 0, 0);
+  const eDate = new Date(2018, 5, 10, 0, 0, 0);
+  await HistoricalData.importHistory("BTC-USD", sDate, eDate, 60);
 
-  await TensorFlow.populateData(60, 240)
+  await TensorFlow.populateData(60, 14400);
 
   // Wowzers! We can even `await` on the right-hand side of the assignment operator
   // and store the result that the promise resolves to in a variable! This is nice!
-  console.log(`seeded ${users.length} users`)
-  console.log(`seeded successfully`)
+  console.log(`seeded ${users.length} users`);
+  console.log(`seeded successfully`);
 }
 
 // Execute the `seed` function, IF we ran this module directly (`node seed`).
@@ -47,21 +47,22 @@ async function seed() {
 if (module === require.main) {
   seed()
     .catch(err => {
-      console.error(err)
-      process.exitCode = 1
+      console.error(err);
+      process.exitCode = 1;
     })
-    .then(() => { // `finally` is like then + catch. It runs no matter what.
-      console.log('closing db connection')
-      db.close()
-      console.log('db connection closed')
-    })
+    .then(() => {
+      // `finally` is like then + catch. It runs no matter what.
+      console.log("closing db connection");
+      db.close();
+      console.log("db connection closed");
+    });
   /*
    * note: everything outside of the async function is totally synchronous
    * The console.log below will occur before any of the logs that occur inside
    * of the async function
    */
-  console.log('seeding...')
+  console.log("seeding...");
 }
 
 // we export the seed function for testing purposes (see `./seed.spec.js`)
-module.exports = seed
+module.exports = seed;
