@@ -25,7 +25,7 @@ const buildLstm = (forgetBias, kernel, bias, c, h) => {
   const res = await TensorFlow.findAll({ order: ['histTime', 'ASC'] })
   const data = res.map(item => Object.values(item.dataValues).slice(1))
 }
-const lstm = buildLstm(forgetBias, lstmKernel, lstmBias, c, h).then(()=>{
+const lstm = buildLstm(forgetBias, lstmKernel, lstmBias, c, h).then(() => {
   console.log(lstmBias, lstm)
 })
 

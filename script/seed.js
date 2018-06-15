@@ -29,7 +29,7 @@ async function seed() {
     User.create({ email: "murphy@email.com", password: "123" })
   ]);
 
-  const sDate = new Date(2017, 5, 1, 0, 0, 0);
+  const sDate = new Date(2018, 4, 1, 0, 0, 0);
   const eDate = new Date(2018, 5, 10, 0, 0, 0);
   await HistoricalData.importHistory("BTC-USD", sDate, eDate, 60);
 
