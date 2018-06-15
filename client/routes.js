@@ -4,7 +4,6 @@ import { withRouter, Route, Switch } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Login, Signup, UserHome, LandingPage, HistoricalData } from './components'
 import { me } from './store'
-import Tfjs from './tfjs'
 
 class Routes extends Component {
   componentDidMount() {
