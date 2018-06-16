@@ -29,11 +29,12 @@ async function seed() {
     User.create({ email: "murphy@email.com", password: "123" })
   ]);
 
-  const sDate = new Date(2017, 4, 1, 0, 0, 0);
+  const sDate = new Date(2018, 4, 1, 0, 0, 0);
   const eDate = new Date(2018, 5, 10, 0, 0, 0);
   await HistoricalData.importHistory("BTC-USD", sDate, eDate, 60);
 
-  await TensorFlow.populateData(60, 14400);
+  //half hour periods
+  await TensorFlow.populateData(60, 1800);
 
   // Wowzers! We can even `await` on the right-hand side of the assignment operator
   // and store the result that the promise resolves to in a variable! This is nice!

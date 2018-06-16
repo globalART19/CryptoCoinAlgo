@@ -127,18 +127,23 @@ TensorFlow.populateData = async function (granularity, period, curHistData) {
   const dataPointsPerPeriod = Math.floor(period / granularity) > 0 ?
     Math.floor(period / granularity) : 1
   const sortedHistData = histData.sort((a, b) => a[0] - b[0])
+  let count = 0 //=============================================================testing
   await Promise.all(sortedHistData.map(async (item, i, histDataArray) => {
     let objData
     // Use previous data point to fill any missing data
-    let curTime = histDataArray[i - 1][0]
-    if (Math.round(item[0] - curTime) > 1) {
-      while (Math.round(item[0] - curTime) > 1) {
-        let repeatItem = [curTime, ...histDataArray[i - 1].slice(1)]
-        objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
-        await TensorFlow.create(objData)
-        curTime += granularity
+    if (histData[i - 1]) {
+      let curTime = histDataArray[i - 1][0]
+      if (Math.round((item[0] - curTime) / granularity) > 1) {
+        while (Math.round((item[0] - curTime) / granularity) > 1) {
+          count++ //=============================================================testing
+          console.log('missed data point # ', count) //=============================================================testing
+          let repeatItem = [curTime, ...histDataArray[i - 1].slice(1)]
+          objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
+          await TensorFlow.create(objData)
+          curTime += granularity
+        }
+        return histDataArray[i - 1][0];
       }
-      return histDataArray[i - 1][0];
     }
     objData = calcData(item, i, histDataArray, dataPointsPerPeriod)
     return TensorFlow.create(objData)
