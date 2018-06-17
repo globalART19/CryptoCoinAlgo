@@ -31,12 +31,17 @@ const HistoricalData = db.define('historicaldata', {
   },
 })
 
-const formatData = (data, timeFactor, period = 0, granularity = 0) => {
+const formatData = (data, timeFactor, period = 0, granularity = 0, tf = 0) => {
   const formattedData = data.map((elem, i, data) => {
     // let convertedTime = new Date(0)
     // convertedTime.setUTCSeconds(elem.histTime)
     // return i > data.length - 300 * timeFactor ? [convertedTime, elem.close] : null
-    return [elem.histTime, elem.close, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
+    if (tf) {
+      return [elem.histTime, elem.high, elem.low, elem.open, elem.close, elem.volume]
+      // return [elem.histTime, elem.high, elem.low, elem.open, elem.close, elem.volume, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
+    } else {
+      return [elem.histTime, elem.close, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
+    }
   }).filter(elem => !!elem)
   if (period && granularity) {
     // data = await calculateIndicators(granularity, period, histDataArray)
@@ -47,26 +52,50 @@ const formatData = (data, timeFactor, period = 0, granularity = 0) => {
   return formattedData
 }
 
+async function logMinMaxArr() {
+  const maxlow = await HistoricalData.max('low')
+  const maxhigh = await HistoricalData.max('high')
+  const maxopen = await HistoricalData.max('open')
+  const maxclose = await HistoricalData.max('close')
+  const maxvolume = await HistoricalData.max('volume')
+  const minlow = await HistoricalData.min('low')
+  const minhigh = await HistoricalData.min('high')
+  const minopen = await HistoricalData.min('open')
+  const minclose = await HistoricalData.min('close')
+  const minvolume = await HistoricalData.min('volume')
+  console.log('Min: ', [minlow, minhigh, minopen, minclose, minvolume])
+  console.log('Max: ', [maxlow, maxhigh, maxopen, maxclose, maxvolume])
+  return {
+    min: [minlow, minhigh, minopen, minclose, minvolume],
+    max: [maxlow, maxhigh, maxopen, maxclose, maxvolume]
+  }
+}
+
 HistoricalData.findDataSets = async function (start = 0, end = 9999999999) {
   const data = await HistoricalData.findAll({
-    attributes: ['histTime', 'close'],
-    where: {
-      histTime: {
-        $between: [start - 1, end + 1]
-      }
-    },
+    // attributes: ['histTime', 'close'],
+    // where: {
+    //   histTime: {
+    //     $between: [start - 1, end + 1]
+    //   }
+    // },
     order: [['histTime', 'ASC']]
   })
   const chart1MinData = formatData(data, 1)
   const chart1HrData = formatData(data, 1)
   const chart1DayData = formatData(data, 24)
   const chart1WkData = formatData(data, 168)
+  const tfData = formatData(data, 1, 0, 0, 1)
+
+  const minMax = await logMinMaxArr()
 
   return {
     chart1MinData,
     chart1HrData,
     chart1DayData,
-    chart1WkData
+    chart1WkData,
+    tfData,
+    minMax
   }
 }
 
@@ -96,7 +125,25 @@ HistoricalData.importHistory = async function (product, startDate, endDate, gran
     while (endSetTime <= endDate.getTime() || count === 0) {
       let dataArray = await getHistoricalAPIData(product, startSetTime, endSetTime, granularity)
       await sleep(500)
-      const objectifiedArray = dataArray.map(elem => {
+      const filledDataArray = []
+      dataArray.forEach((elem, i, histDataArray) => {
+        if (histDataArray[i - 1]) {
+          let curTime = histDataArray[i - 1][0]
+          if (Math.round((elem[0] - curTime) / granularity) > 1) {
+            console.log(elem[0] - curTime, Math.round((elem[0] - curTime) / granularity))
+            count2 += Math.round((elem[0] - curTime) / granularity) - 1
+            while (Math.round((elem[0] - curTime) / granularity) > 1) {
+              count++ //=================================================testing
+              console.log('missed data point # ', count) //============testing
+              let repeatItem = [curTime, ...histDataArray[i - 1].slice(1)]
+              filledDataArray.push(repeatItem)
+              curTime += granularity
+            }
+          }
+        }
+        filledDataArray.push(elem)
+      })
+      const objectifiedArray = filledDataArray.map(elem => {
         return {
           histTime: elem[0],
           low: elem[1],
@@ -106,7 +153,7 @@ HistoricalData.importHistory = async function (product, startDate, endDate, gran
           volume: elem[5],
         }
       })
-      HistoricalData.bulkCreate(objectifiedArray)
+      await HistoricalData.bulkCreate(objectifiedArray)
       startSetTime = endSetTime + granMS
       endSetTime += 300 * granMS
       console.log('pull attempt # ', count)

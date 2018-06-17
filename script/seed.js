@@ -34,7 +34,7 @@ async function seed() {
   await HistoricalData.importHistory("BTC-USD", sDate, eDate, 60);
 
   //half hour periods
-  await TensorFlow.populateData(60, 1800);
+  // await TensorFlow.populateData(60, 1800);
 
   // Wowzers! We can even `await` on the right-hand side of the assignment operator
   // and store the result that the promise resolves to in a variable! This is nice!

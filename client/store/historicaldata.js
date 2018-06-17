@@ -16,7 +16,10 @@ const defaultHistory = {
   chart1Day: [],
   chart1Wk: [],
   selectedChart: 'chart1Hr',
-  chartData: []
+  chartData: [],
+  tfData: [],
+  min: [],
+  max: []
 }
 
 /**
@@ -38,6 +41,7 @@ export const getInitialChartDataThunk = () => {
   return async (dispatch) => {
     try {
       const res = await axios.get('/api/historicaldata', { start: 0, end: 0 })
+      // console.log(res.data)
       dispatch(getChartData(res.data || defaultHistory))
     } catch (err) {
       console.log(err)
@@ -57,6 +61,9 @@ export default function (state = defaultHistory, action) {
         chart1Hr: action.data.chart1HrData,
         chart1Day: action.data.chart1DayData,
         chart1Wk: action.data.chart1WkData,
+        tfData: action.data.tfData,
+        min: action.data.minMax.min,
+        max: action.data.minMax.max
       }
     case SELECT_CHART:
       return {
