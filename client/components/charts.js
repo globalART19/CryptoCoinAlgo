@@ -66,7 +66,7 @@ const Charts = (props) => {
         return {
           title: chartName,
           hAxis: {
-            title: 'Time (1hr intervals for past year)',
+            title: 'Time (1min intervals for past month)',
             // format: 'MMM d, y'
           },
           vAxis: { title: 'Price ($)' },

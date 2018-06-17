@@ -53,12 +53,12 @@ class HistoricalData extends React.Component {
   handleTfModel = async () => {
     const yData = await runTfModel(this.props.tfData, this.props.min, this.props.max)
     let i = 0
-    yData.map((elem, i) => {
+    const results = yData.map((elem, i) => {
       return [i, ...elem]
     })
-    yData.shift(['time', 'actual', 'predicted'])
-    // console.log(results)
-    this.setState({ ...this.state, results: yData })
+    results.unshift(['time', 'actual', 'predicted'])
+    console.log('results', results)
+    this.setState({ ...this.state, results })
   }
   render() {
     const chart1Data = this.props[this.props.selectedChart].map(instance => {

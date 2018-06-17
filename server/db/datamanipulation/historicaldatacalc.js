@@ -2,13 +2,14 @@ const indicators = require('./indicatorcalcs')
 const { HistoricalData } = require('../models')
 
 const calculateIndicators = async function (granularity, period, curHistData) {
-  let histData
-  if (!curHistData) {
-    const newData = await HistoricalData.findAll({ attributes: ['histTime', 'close'], order: [['histTime', 'ASC']] })
-    histData = newData.map((item) => { return [item.dataValues.histTime, item.dataValues.close] })
-  } else {
-    histData = curHistData.map((item) => { return [item[0], item[1]] })
-  }
+  let histData = curHistData
+  // if (!curHistData) {
+  //   console.log('shouldnt be here')
+  //   const newData = await HistoricalData.findAll({ attributes: ['histTime', 'close'], order: [['histTime', 'ASC']] })
+  //   histData = newData.map((item) => { return [item.dataValues.histTime, item.dataValues.close] })
+  // } else {
+  //   histData = curHistData.map((item) => { return [item[0], item[1]] })
+  // }
   const dataPointsPerPeriod = Math.floor(period / granularity) > 0 ? Math.floor(period / granularity) : 1
   const sortedHistData = histData.sort((a, b) => a[0] - b[0])
   sortedHistData.forEach((item, i, histDataArray) => {

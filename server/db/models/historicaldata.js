@@ -3,6 +3,8 @@ const Sequelize = require('sequelize')
 const { sleep } = require('./helperfunctions')
 const Gdax = require('gdax')
 const publicClient = new Gdax.PublicClient()
+const { calculateIndicators } = require('../datamanipulation/historicaldatacalc')
+
 
 const HistoricalData = db.define('historicaldata', {
   histTime: {
@@ -36,8 +38,8 @@ const formatData = (data, timeFactor, period = 0, granularity = 0, tf = 0) => {
     // let convertedTime = new Date(0)
     // convertedTime.setUTCSeconds(elem.histTime)
     // return i > data.length - 300 * timeFactor ? [convertedTime, elem.close] : null
+    return [elem.histTime, elem.high, elem.low, elem.open, elem.close, elem.volume]
     if (tf) {
-      return [elem.histTime, elem.high, elem.low, elem.open, elem.close, elem.volume]
       // return [elem.histTime, elem.high, elem.low, elem.open, elem.close, elem.volume, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
     } else {
       return [elem.histTime, elem.close, elem.m12ema, elem.m26ema, elem.macd, elem.msig, elem.rsi]
@@ -52,7 +54,7 @@ const formatData = (data, timeFactor, period = 0, granularity = 0, tf = 0) => {
   return formattedData
 }
 
-async function logMinMaxArr() {
+async function logMinMaxArr(data) {
   const maxlow = await HistoricalData.max('low')
   const maxhigh = await HistoricalData.max('high')
   const maxopen = await HistoricalData.max('open')
@@ -63,11 +65,71 @@ async function logMinMaxArr() {
   const minopen = await HistoricalData.min('open')
   const minclose = await HistoricalData.min('close')
   const minvolume = await HistoricalData.min('volume')
-  console.log('Min: ', [minlow, minhigh, minopen, minclose, minvolume])
-  console.log('Max: ', [maxlow, maxhigh, maxopen, maxclose, maxvolume])
+  const m12max = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.NEGATIVE_INFINITY && curItem[6] !== null) {
+      return curItem[6]
+    }
+    return Math.max(prevVal, curItem[6])
+  }, Number.NEGATIVE_INFINITY)
+  const m12min = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.POSITIVE_INFINITY && curItem[6] !== null) {
+      return curItem[6]
+    }
+    return Math.min(prevVal, curItem[6])
+  }, Number.POSITIVE_INFINITY)
+  const m26max = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.NEGATIVE_INFINITY && curItem[7] !== null) {
+      return curItem[7]
+    }
+    return Math.max(prevVal, curItem[7])
+  }, Number.NEGATIVE_INFINITY)
+  const m26min = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.POSITIVE_INFINITY && curItem[7] !== null) {
+      return curItem[7]
+    }
+    return Math.min(prevVal, curItem[7])
+  }, Number.POSITIVE_INFINITY)
+  const macdmax = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.NEGATIVE_INFINITY && curItem[8] !== null) {
+      return curItem[8]
+    }
+    return Math.max(prevVal, curItem[8])
+  }, Number.NEGATIVE_INFINITY)
+  const macdmin = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.POSITIVE_INFINITY && curItem[8] !== null) {
+      return curItem[8]
+    }
+    return Math.min(prevVal, curItem[8])
+  }, Number.POSITIVE_INFINITY)
+  const msigmax = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.NEGATIVE_INFINITY && curItem[9] !== null) {
+      return curItem[9]
+    }
+    return Math.max(prevVal, curItem[9])
+  }, Number.NEGATIVE_INFINITY)
+  const msigmin = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.POSITIVE_INFINITY && curItem[9] !== null) {
+      return curItem[9]
+    }
+    return Math.min(prevVal, curItem[9])
+  }, Number.POSITIVE_INFINITY)
+  const rsimax = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.NEGATIVE_INFINITY && curItem[10] !== null) {
+      return curItem[10]
+    }
+    return Math.max(prevVal, curItem[10])
+  }, Number.NEGATIVE_INFINITY)
+  const rsimin = data.reduce((prevVal, curItem) => {
+    if (prevVal === Number.POSITIVE_INFINITY && curItem[10] !== null) {
+      return curItem[10]
+    }
+    return Math.min(prevVal, curItem[10])
+  }, Number.POSITIVE_INFINITY)
+  console.log('Min: ', [minlow, minhigh, minopen, minclose, minvolume, m12min, m26min, macdmin, msigmin, rsimin])
+  console.log('Max: ', [maxlow, maxhigh, maxopen, maxclose, maxvolume, m12max, m26max, macdmax, msigmax, rsimax])
   return {
-    min: [minlow, minhigh, minopen, minclose, minvolume],
-    max: [maxlow, maxhigh, maxopen, maxclose, maxvolume]
+    min: [maxlow, maxhigh, maxopen, maxclose, maxvolume, m12max, m26max, macdmax, msigmax, rsimax],
+    max: [minlow, minhigh, minopen, minclose, minvolume, m12min, m26min, macdmin, msigmin, rsimin]
   }
 }
 
@@ -81,13 +143,16 @@ HistoricalData.findDataSets = async function (start = 0, end = 9999999999) {
     // },
     order: [['histTime', 'ASC']]
   })
+  const histData = data.map(item => item.dataValues)
+  const histDataArray = formatData(histData, 1)
   const chart1MinData = formatData(data, 1)
   const chart1HrData = formatData(data, 1)
   const chart1DayData = formatData(data, 24)
   const chart1WkData = formatData(data, 168)
-  const tfData = formatData(data, 1, 0, 0, 1)
 
-  const minMax = await logMinMaxArr()
+  const tfData = await calculateIndicators(60, 3600, histDataArray)
+
+  const minMax = await logMinMaxArr(histDataArray)
 
   return {
     chart1MinData,

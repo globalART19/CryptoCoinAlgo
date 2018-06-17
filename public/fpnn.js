@@ -21,7 +21,8 @@ function shuffle(xArr, yArr) {
 
 export async function runTfModel(rawData, min, max) {
   // NN Constants
-  const numInputs = 5
+  const numInputs = 10
+  const numOutputs = 1
   const numNeurons = 256
   const batchSize = 128
   const epochs = 10
@@ -43,7 +44,7 @@ export async function runTfModel(rawData, min, max) {
     //scaling
     const scaled = elem.map((item, i) => {
       if (i > 0) {
-        return (elem[i] - min[i - 1]) / (max[i - 1] - min[i - 1])
+        return (item - min[i - 1]) / (max[i - 1] - min[i - 1])
       }
     })
     batchXArr.push(scaled.slice(1))
@@ -83,7 +84,7 @@ export async function runTfModel(rawData, min, max) {
     activation: 'relu',
   })
   const output = tf.layers.dense({
-    units: 1,
+    units: numOutputs,
     activation: 'relu'
   })
 
