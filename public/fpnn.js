@@ -25,9 +25,9 @@ export async function runTfModel(rawData, min, max) {
   const numOutputs = 1
   const numNeurons = 256
   const batchSize = 128
-  const epochs = 25
+  const epochs = 5
   const trainTestRatio = .8
-  const learningRate = 0.05
+  const learningRate = 0.1
 
   const lstmSize = 100
   const n_steps = 45
@@ -93,7 +93,7 @@ export async function runTfModel(rawData, min, max) {
   })
 
   model.add(hidden)
-  model.add(hidden2)
+  // model.add(hidden2)
   model.add(output)
 
   const sgdOptimizer = tf.train.sgd(learningRate)
