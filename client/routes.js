@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter, Route, Switch } from 'react-router-dom'
 import PropTypes from 'prop-types'
-import { Login, Signup, UserHome, LandingPage, HistoricalData, TensorFlow2 } from './components'
+import { Login, Signup, UserHome, LandingPage, HistoricalData, TensorFlow } from './components'
 import { me } from './store'
 
 class Routes extends Component {
@@ -24,13 +24,13 @@ class Routes extends Component {
             {/* Routes placed here are only available after logging in */}
             <Route path="/home" component={UserHome} />
             <Route path='/historicaldata' component={HistoricalData} />
-            <Route path='/tensorflow' component={TensorFlow2} />
+            <Route path='/tensorflow' component={TensorFlow} />
             <Route component={LandingPage} />
           </Switch>
         }
         {/* Displays our Login component as a fallback */}
         <Route path='/historicaldata' component={HistoricalData} />
-        <Route path='/tensorflow' component={TensorFlow2} />
+        <Route path='/tensorflow' component={TensorFlow} />
         <Route component={LandingPage} />
       </Switch>
     )
