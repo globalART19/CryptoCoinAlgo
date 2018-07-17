@@ -31,6 +31,7 @@
     "express": "^4.14.1",
     "express-session": "^1.15.1",
     "gdax": "^0.8.0",
+    "growl": "^1.10.5",
     "history": "^4.6.3",
     "morgan": "^1.8.1",
     "passport": "^0.3.2",
