@@ -13,9 +13,9 @@ router.get('/', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const sDate = new Date(2017, 4, 1, 0, 0, 0)
-    const eDate = new Date(2018, 5, 10, 0, 0, 0)
-    await HistoricalData.importHistory('BTC-USD', sDate, eDate, 60)
+    const sDate = new Date(2017, 5, 10, 0, 0, 0)
+    const eDate = new Date(2018, 6, 10, 0, 0, 0)
+    await HistoricalData.importHistory('BTC-USD', sDate, eDate, 3600)
     res.sendStatus(201)
   } catch (e) {
     next(e)
