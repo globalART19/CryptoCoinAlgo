@@ -48,12 +48,13 @@ class HistoricalData extends React.Component {
     const chart1Data = this.props[this.props.selectedChart].map(instance => {
       return instance.slice(0, 4)
     })
-    const chart2Data = this.props[this.props.selectedChart].map(instance => {
-      return [...instance.slice(0, 1), ...instance.slice(4, 6)]
-    })
-    const chart3Data = this.props[this.props.selectedChart].map(instance => {
-      return [...instance.slice(0, 1), ...instance.slice(6)]
-    })
+    console.log('chart1Data', chart1Data)
+    // const chart2Data = this.props[this.props.selectedChart].map(instance => {
+    //   return [...instance.slice(0, 1), ...instance.slice(4, 6)]
+    // })
+    // const chart3Data = this.props[this.props.selectedChart].map(instance => {
+    //   return [...instance.slice(0, 1), ...instance.slice(6)]
+    // })
     return (
       <div id='historical-data'>
         <div id='update-indicators'>
@@ -65,7 +66,7 @@ class HistoricalData extends React.Component {
         </div>
         {/* <AlgorithmResults /> */}
         <div className='chart-block'>
-          <Charts chartData={chart1Data} chartName={this.props.selectedChart} />
+          {chart1Data.length && <Charts chartData={chart1Data} chartName={this.props.selectedChart} />}
           <div className='chart-navbar' onClick={() => { }}>
             <div className='chartoptions'>1day</div>
             <div className='chartoptions'>1week</div>
@@ -73,8 +74,8 @@ class HistoricalData extends React.Component {
             <div className='chartoptions'>1year</div>
           </div>
         </div>
-        {!!chart2Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart2Data} chartName='MACD and mSig' />}
-        {!!chart3Data[0] && !!(chart2Data[0].length - 1) && <Charts chartData={chart3Data} chartName='rSig' />}
+        {/* {!!chart2Data.length && !!(chart2Data[0].length - 1) && <Charts chartData={chart2Data} chartName='MACD and mSig' />} */}
+        {/* {!!chart3Data[0] && !!(chart2Data[0].length - 1) && <Charts chartData={chart3Data} chartName='rSig' />} */}
         <button type='button' onClick={() => { this.handlePullData() }} className="btn btn-primary" style={{ display: 'block', margin: 'auto', background: 'red' }}>Pull Data</button>
       </div>)
   }
